@@ -3,7 +3,7 @@
 # streamlit run /Users/anishananda/Desktop/TCS intern/key_point_generator/key_points_ui.py
 
 # python -m streamlit run key_points_ui.py 
-
+# streamlit run key_points_ui.py
 
 # importing
 import streamlit as st
@@ -31,7 +31,7 @@ def read_pdf(file):#(file_path):
     return text
 
 # pegasus - apache
-#summarizer = pipeline("summarization", model="google/pegasus-cnn_dailymail")
+summarizer = pipeline("summarization", model="google/pegasus-cnn_dailymail")
 
 # LLM based : MIT license
 model_name = "EleutherAI/gpt-neo-125M"
@@ -40,32 +40,32 @@ model = GPTNeoForCausalLM.from_pretrained(model_name)
 model = model.half()  # Convert to half precision # to make faster
 
 # preprocess through pegasus
-# def thru_pegasus(document):
+def thru_pegasus(document):
 
-#     splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=50)
-#     split_documents = splitter.split_text(document)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=50)
+    split_documents = splitter.split_text(document)
 
-#     summaries = []
-#     for i, chunk in enumerate(split_documents):
-#         try:
-#             summary = summary = summarizer(chunk, max_length=150, min_length=40, do_sample=False)
-#             summaries.append(summary)
-#         except IndexError as e:
-#             print(f"IndexError at chunk {i}: {e}")
-#             summaries.append("Error in summarization")
+    summaries = []
+    for i, chunk in enumerate(split_documents):
+        try:
+            summary = summary = summarizer(chunk, max_length=500, min_length=40, do_sample=False)
+            summaries.append(summary)
+        except IndexError as e:
+            print(f"IndexError at chunk {i}: {e}")
+            summaries.append("Error in summarization")
 
-#     final_sum = ''
-#     for i in range(len(summaries)):
-#         if summaries[i] != "Error in summarization":
-#             final_sum += summaries[i][0]['summary_text'] +" "
+    final_sum = ''
+    for i in range(len(summaries)):
+        if summaries[i] != "Error in summarization":
+            final_sum += summaries[i][0]['summary_text'] +" "
 
-#     return final_sum
+    return final_sum
 
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
 
 # put through gpt neo
-def extract_key_points(prompt, document, model, tokenizer, max_length=15000):
+def extract_key_points(prompt, document, model, tokenizer, max_length=100000):
     # Create a prompt for the model to generate key points
     prompt = prompt + f" from the following document:\n{document}\n"
 

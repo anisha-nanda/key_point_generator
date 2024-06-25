@@ -55,7 +55,7 @@ def extract_key_points(prompt, document):
     inputs = tokenizer(prompt + document, return_tensors="pt", max_length=512, truncation=True)
     if torch.cuda.is_available():
         inputs = inputs.to('cuda')
-    outputs = model.generate(**inputs, max_length=1000, num_return_sequences=1)
+    outputs = model.generate(**inputs, max_length=100000, num_return_sequences=1)
     return tokenizer.decode(outputs[0])
 
 
